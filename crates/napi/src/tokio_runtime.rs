@@ -69,7 +69,11 @@ where
 /// then call the provided closure. Otherwise it will just call the provided closure.
 #[inline]
 pub fn within_runtime_if_available<F: FnOnce() -> T, T>(f: F) -> T {
-  let _rt_guard = unsafe { RT.as_ref() }.unwrap().enter();
+  let _rt_guard = match unsafe { RT.as_ref() } {
+    Some(rt) => Some(rt.enter()),
+    None => None,
+  };
+
   f()
 }
 
